@@ -39,7 +39,7 @@ async function run() {
             });
 
             //update API
-            // 
+            // http://localhost:4000/item/id
             app.put('/item/:id', async (req, res) => {
                 const id = req.params.id;
                 const data = req.body;
@@ -50,10 +50,21 @@ async function run() {
                         ...data
                     },
                 };
-                const result = await movies.updateOne(
+                const result = await dataCollection.updateOne(
                     filter,
                     updateDoc,
                     options);
+               res.send(result);     
+            });
+
+            //delete API
+            // http://localhost:4000/item/id
+
+            app.delete('/item/:id', async(req, res)=>{
+                const id = req.params.id;
+                const query = { _id: ObjectId(id)};
+                const result = await dataCollection.deleteOne(query);
+                res.send(result);
             })
 
         })
@@ -63,7 +74,7 @@ async function run() {
 
 run().catch(console.dir);
 
-app.get('/try', (req, res) => {
+app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
