@@ -8,8 +8,6 @@ const port = process.env.PORT || 4000
 app.use(cors());
 app.use(express.json())
 
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.1isr8.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
     useNewUrlParser: true,
@@ -32,46 +30,57 @@ async function run() {
         });
         app.get('/item/:id', async (req, res) => {
             const id = req.params.id;
-            const result = await dataCollection.findOne({_id: ObjectId(id)})
+            const result = await dataCollection.findOne({ _id: ObjectId(id) })
             res.send(result);
         });
 
-            //post Api
-            // http://localhost:4000/item
-            app.post('/item', async (req, res) => {
-                const data = req.body;
-                const result = await dataCollection.insertOne(data);
-                res.send(result);
-            });
+        //my items
+        app.get('/myitem/:id', async (req, res) => {
+            const email = req.params?.id
+            if (email) {
+                const query = { email: email };
+                const order = dataCollection.find(query);
+                const result = await order.toArray();
+                res.send(result)
+            }
+        })
 
-            //update API
-            // http://localhost:4000/item/id
-            app.put('/item/:id', async (req, res) => {
-                const id = req.params.id;
-                const data = req.body;
-                const filter = { _id: ObjectId(id) };
-                const options = { upsert: true };
-                const updateDoc = {
-                    $set: {
-                        ...data
-                    },
-                };
-                const result = await dataCollection.updateOne(
-                    filter,
-                    updateDoc,
-                    options);
-                res.send(result);
-            });
+        //post Api
+        // http://localhost:4000/item
+        app.post('/item', async (req, res) => {
+            const data = req.body;
+            const result = await dataCollection.insertOne(data);
+            res.send(result);
+        });
 
-            //delete API
-            // http://localhost:4000/item/id
+        //update API
+        // http://localhost:4000/item/id
+        app.put('/item/:id', async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    ...data
+                },
+            };
+            const result = await dataCollection.updateOne(
+                filter,
+                updateDoc,
+                options);
+            res.send(result);
+        });
 
-            app.delete('/item/:id', async (req, res) => {
-                const id = req.params.id;
-                const query = { _id: ObjectId(id) };
-                const result = await dataCollection.deleteOne(query);
-                res.send(result);
-            })
+        //delete API
+        // http://localhost:4000/item/id
+
+        app.delete('/item/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await dataCollection.deleteOne(query);
+            res.send(result);
+        })
     }
     finally { }
 }
