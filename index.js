@@ -40,7 +40,7 @@ async function run() {
 
             //update API
             // http://localhost:4000/item/id
-            app.put('/item/:id', async (req, res) => {
+            app.put('/item/:id', async(req, res) => {
                 const id = req.params.id;
                 const data = req.body;
                 const filter = { _id: ObjectId(id) };
