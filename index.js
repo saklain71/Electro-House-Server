@@ -29,6 +29,12 @@ async function run() {
             const cursor = dataCollection.find(query)
             const result = await cursor.toArray();
             res.send(result);
+        });
+        app.get('/item/:id', async (req, res) => {
+            const id = req.params.id;
+            const result = await dataCollection.findOne({_id: ObjectId(id)})
+            res.send(result);
+        });
 
             //post Api
             // http://localhost:4000/item
@@ -40,7 +46,7 @@ async function run() {
 
             //update API
             // http://localhost:4000/item/id
-            app.put('/item/:id', async(req, res) => {
+            app.put('/item/:id', async (req, res) => {
                 const id = req.params.id;
                 const data = req.body;
                 const filter = { _id: ObjectId(id) };
@@ -54,20 +60,18 @@ async function run() {
                     filter,
                     updateDoc,
                     options);
-               res.send(result);     
+                res.send(result);
             });
 
             //delete API
             // http://localhost:4000/item/id
 
-            app.delete('/item/:id', async(req, res)=>{
+            app.delete('/item/:id', async (req, res) => {
                 const id = req.params.id;
-                const query = { _id: ObjectId(id)};
+                const query = { _id: ObjectId(id) };
                 const result = await dataCollection.deleteOne(query);
                 res.send(result);
             })
-
-        })
     }
     finally { }
 }
